@@ -1,0 +1,32 @@
+import pandas as pd
+from sklearn.tree import DecisionTreeClassifier
+
+# Load dataset
+df = pd.read_csv("/mnt/data/Lipstick.csv")
+
+# Rename Ms → MaritalStatus
+df = df.rename(columns={"Ms": "MaritalStatus"})
+
+# Features and target
+X = df[["Age", "Income", "Gender", "MaritalStatus"]]
+y = df["Buys"]
+
+# One-hot encode
+X = pd.get_dummies(X)
+
+# Train model
+model = DecisionTreeClassifier()
+model.fit(X, y)
+
+# Test data (Age = 21-35, Income = Low, Gender = Male, Marital Status = Married)
+test = pd.DataFrame([{
+    "Age": "21-35",
+    "Income": "Low",
+    "Gender": "Male",
+    "MaritalStatus": "Married"
+}])
+
+test = pd.get_dummies(test).reindex(columns=X.columns, fill_value=0)
+
+# Prediction
+print("Decision:", model.predict(test)[0])
